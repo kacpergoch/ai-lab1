@@ -1,0 +1,85 @@
+/* style-2.css: Dark, bold look */
+body {
+    background-color: #222;
+    color: #f9f9f9;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url(dark.jpg);
+}
+
+header, footer {
+    background-color: #444;
+    padding: 20px;
+    text-align: center;
+    color: #ffd700;
+    border: white;
+    border-style: double;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #ffd700;
+    margin-top: 30px;
+}
+
+h2 {
+    color: #ff9800;
+    margin-top: 25px;
+}
+
+h3 {
+    color: #00bcd4;
+    margin-top: 15px;
+}
+
+p {
+    margin: 10px 0 10px 20px;
+}
+
+ul, ol, dl {
+    list-style-type: square;
+    margin-left: 40px;
+    margin-bottom: 20px;
+}
+
+/* Responsive styles with flexbox */
+@media screen and (max-width: 600px) {
+    header, footer {
+        background-color: white;
+        padding: 10px;
+        font-size: 1em;
+    }
+    main {
+        padding: 10px;
+        max-width: 100%;
+    }
+    h1 {
+        color: #222;
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+    h2 {
+        font-size: 1.2em;
+        margin-top: 15px;
+    }
+    h3 {
+        font-size: 1em;
+        margin-top: 10px;
+    }
+    p, ul, ol, dl {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+}
