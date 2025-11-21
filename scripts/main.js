@@ -1,118 +1,102 @@
-class WatherApp {
+class WeatherApp {
   constructor() {
     this.apiKey = "7ded80d91f2b280ec979100cc8bbba94";
     this.currentWeatherApiUrl = "https://api.openweathermap.org/data/2.5/weather";
-    this.forecastWeatherApiUrl = "https://api.openweathermap.org/data/2.5/forecast5";
-    this.addressInput = document.getElementById("address-input");
+    this.forecastWeatherApiUrl = "https://api.openweathermap.org/data/2.5/forecast";
+    this.cityInput = document.getElementById("city-input");
+    this.currentWeatherTitle = document.getElementById("current-weather-title");
+    this.forecastWeatherTitle = document.getElementById("forecast-weather-title");
     this.fetchButton = document.getElementById("fetch-weather-button");
-    this.addressDisplay = document.getElementById("address-display");
-    this.weatherTable = document.getElementById("weather-table");
-
+    this.currWeatherTable = document.getElementById("curr-weather-table");
+    this.forecastTable = document.getElementById("forecast-table");
     this.fetchButton.addEventListener("click", () => this.fetchWeather());
   }
 
   async fetchWeather() {
-    const address = this.addressInput.value;
-    if (!address) {
-      alert("Please enter an address.");
+    const city_name = this.cityInput.value;
+    if (!city_name) {
+      alert("Enter the city name!");
       return;
     }
 
-    this.addressDisplay.textContent = `Fetching weather for: ${address}`;
-
     try {
         const request = new XMLHttpRequest();
-        request.open('GET', `${this.currentWeatherApiUrl}?q=${encodeURIComponent(address)}&appid=${this.apiKey}`, true);
-        request.onload = function() {
+        request.open('GET', `${this.currentWeatherApiUrl}?q=${encodeURIComponent(city_name)}&appid=${this.apiKey}&units=metric`, true);
+        request.onload = async function() {
             if (request.status === 200) {
-                var currentWeatherData = JSON.parse(request.responseText);
-                var lat = currentWeatherData.coord.lat;
-                var lon = currentWeatherData.coord.lon;
-                
-                
-                request.open('GET', `${this.forecastWeatherApiUrl}?lat=${lat}&lon=${lon}&appid=${this.apiKey}`, true);
-                request.onload = function() {
-                    if (request.status === 200) {
-                        var forecastData = JSON.parse(request.responseText);
+                const currentWeatherData = JSON.parse(request.responseText);
+                const lat = currentWeatherData.coord.lat;
+                const lon = currentWeatherData.coord.lon;
 
-                        const data = forecastData.list.map(entry => ({
+                const currentWeather = {
+                    temperature: currentWeatherData.main.temp,
+                    condition: currentWeatherData.weather[0].description,
+                    windSpeed: currentWeatherData.wind.speed,
+                    humidity: currentWeatherData.main.humidity
+                };
+                console.log("Current Weather Data:", currentWeather);
+
+                // Update the current weather table
+                const currWeatherTableDiv = document.getElementById("curr-weather-table");
+                currWeatherTableDiv.innerHTML = "";
+                new gridjs.Grid({
+                    columns: ["Temperature", "Condition", "Wind Speed", "Humidity"],
+                    data: [
+                        [`${currentWeather.temperature}°C`,
+                          currentWeather.condition,
+                          `${currentWeather.windSpeed} km/h`,
+                          `${currentWeather.humidity}%`],
+                    ]
+                }).render(document.getElementById("curr-weather-table"));
+
+                try {
+                    const response = await fetch(`${this.forecastWeatherApiUrl}?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`);
+                    if (response.ok) {
+                        const forecastWeatherData = await response.json();
+
+                        const data = forecastWeatherData.list.map(entry => ({
                             date: entry.dt_txt,
                             temperature: entry.main.temp,
-                            condition: entry.weather[0].description
+                            condition: entry.weather[0].description,
+                            windSpeed: entry.wind.speed,
+                            humidity: entry.main.humidity
                         }));
+                        console.log("Forecast Data:", data);
 
-                        this.displayWeather(data);
+                        // Update the forecast table
+                        const forecastTableDiv = document.getElementById("forecast-table");
+                        forecastTableDiv.innerHTML = "";
+                        new gridjs.Grid({
+                            columns: ["Date", "Temperature", "Condition", "Wind Speed", "Humidity"],
+                            data: data.map(entry => [
+                                entry.date,
+                                `${entry.temperature}°C`,
+                                entry.condition,
+                                `${entry.windSpeed} km/h`,
+                                `${entry.humidity}%`
+                            ])
+                        }).render(document.getElementById("forecast-table"));
                     } else {
                         alert("Failed to fetch forecast data.");
                     }
-                }.bind(this);
-                request.send();
+                } catch (error) {
+                    console.error("Forecast fetch error:", error);
+                    alert("Failed to fetch forecast data.");
+                }
             } else {
                 alert("Failed to fetch current weather data.");
             }
         }.bind(this);
         request.send();
-
-        const data = forecastData.list.map(entry => ({
-            date: entry.dt_txt,
-            temperature: entry.main.temp,
-            condition: entry.weather[0].description
-        }));
-
-
-        this.displayWeather(data);
+        this.currentWeatherTitle.textContent = `Current Weather in ${city_name}`;
+        this.forecastWeatherTitle.textContent = `5-Day Forecast for ${city_name}`;
     } catch (error) {
-      console.error("Fetch error:", error);
-      alert("Failed to fetch weather data.");
+      console.error("Current Weather fetch error:", error);
+      alert("Failed to fetch current weather data.");
     }
-  }
-
-  displayWeather(data) {
-    // Clear previous table
-    this.weatherTable.innerHTML = "";
-
-    // Create table headers
-    const table = document.createElement("table");
-    const headerRow = document.createElement("tr");
-    ["Date", "Temperature", "Condition"].forEach(headerText => {
-      const th = document.createElement("th");
-      th.textContent = headerText;
-      headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
-
-    // Populate table with data
-    data.forEach(entry => {
-      const row = document.createElement("tr");
-      const dateCell = document.createElement("td");
-      dateCell.textContent = entry.date;
-      const tempCell = document.createElement("td");
-      tempCell.textContent = entry.temperature;
-      const conditionCell = document.createElement("td");
-      conditionCell.textContent = entry.condition;
-
-      row.appendChild(dateCell);
-      row.appendChild(tempCell);
-      row.appendChild(conditionCell);
-      table.appendChild(row);
-    });
-
-    this.weatherTable.appendChild(table);
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new WatherApp();
+  new WeatherApp();
 });
-
-// Sample Grid.js table initialization      
-new gridjs.Grid({
-  columns: ["Name", "Email", "Phone Number"],
-  data: [
-    ["John", "john@example.com", "(353) 01 222 3333"],
-    ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
-    ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
-    ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
-    ["Afshin", "afshin@mail.com", "(353) 22 87 8356"]
-  ]
-}).render(document.getElementById("weather-table"));
