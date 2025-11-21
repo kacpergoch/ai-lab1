@@ -9,6 +9,8 @@ class WeatherApp {
     this.fetchButton = document.getElementById("fetch-weather-button");
     this.currWeatherTable = document.getElementById("curr-weather-table");
     this.forecastTable = document.getElementById("forecast-table");
+    this.currWeatherGrid = null;
+    this.forecastGrid = null;
     this.fetchButton.addEventListener("click", () => this.fetchWeather());
   }
 
@@ -38,8 +40,11 @@ class WeatherApp {
 
                 // Update the current weather table
                 const currWeatherTableDiv = document.getElementById("curr-weather-table");
+                if (this.currWeatherGrid) {
+                    this.currWeatherGrid.destroy();
+                }
                 currWeatherTableDiv.innerHTML = "";
-                new gridjs.Grid({
+                this.currWeatherGrid = new gridjs.Grid({
                     columns: ["Temperature", "Condition", "Wind Speed", "Humidity"],
                     data: [
                         [`${currentWeather.temperature}°C`,
@@ -47,7 +52,8 @@ class WeatherApp {
                           `${currentWeather.windSpeed} km/h`,
                           `${currentWeather.humidity}%`],
                     ]
-                }).render(document.getElementById("curr-weather-table"));
+                });
+                this.currWeatherGrid.render(document.getElementById("curr-weather-table"));
 
                 try {
                     const response = await fetch(`${this.forecastWeatherApiUrl}?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`);
@@ -65,8 +71,11 @@ class WeatherApp {
 
                         // Update the forecast table
                         const forecastTableDiv = document.getElementById("forecast-table");
+                        if (this.forecastGrid) {
+                            this.forecastGrid.destroy();
+                        }
                         forecastTableDiv.innerHTML = "";
-                        new gridjs.Grid({
+                        this.forecastGrid = new gridjs.Grid({
                             columns: ["Date", "Temperature", "Condition", "Wind Speed", "Humidity"],
                             data: data.map(entry => [
                                 entry.date,
@@ -75,7 +84,8 @@ class WeatherApp {
                                 `${entry.windSpeed} km/h`,
                                 `${entry.humidity}%`
                             ])
-                        }).render(document.getElementById("forecast-table"));
+                        });
+                        this.forecastGrid.render(document.getElementById("forecast-table"));
                     } else {
                         alert("Failed to fetch forecast data.");
                     }
