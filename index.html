@@ -1,39 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Przykładowa Strona HTML</title>
-    <script src="https://wi.arturk.pl/zen-style.js.php?styles[]=style-1&styles[]=style-2" defer></script>
+    <title>Weather Forecast</title>
+    <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles/main.css">
+    <meta charset="UTF-8">
+
 </head>
 <body>
-	<header>
-		<h1>Przykładowa Strona HTML</h1>
-	</header>
-	<main>
-		<h2>Podtytuł 1</h2>
-		<h3>Nagłówek 1</h3>
-		<p>To jest przykładowy akapit pod nagłówkiem 1.</p>
-		<p>Kolejny akapit pod nagłówkiem 1.</p>
-		<h3>Nagłówek 2</h3>
-		<p>To jest przykładowy akapit pod nagłówkiem 2.</p>
-		<h2>Podtytuł 2</h2>
-		<h3>Nagłówek 3</h3>
-		<p>To jest przykładowy akapit pod nagłówkiem 3.</p>
-		<p>Kolejny akapit pod nagłówkiem 3.</p>
-		<h3>Nagłówek 4</h3>
-		<p>To jest przykładowy akapit pod nagłówkiem 4.</p>
-		<h2>Podtytuł 3</h2>
-		<h3>Nagłówek 5</h3>
-		<p>To jest przykładowy akapit pod nagłówkiem 5.</p>
-		<ul>
-			<li>Pierwszy element listy</li>
-			<li>Drugi element listy</li>
-			<li>Trzeci element listy</li>
-			<li>Czwarty element listy</li>
-			<li>Piąty element listy</li>
-		</ul>
+    <header>
+    </header>
+    <main>
+        <div id="weather-app">
+            <input type="text" id="address-input" placeholder="Type in your address...">
+            <button id="fetch-weather-button">Get Forecast</button>
+            <p id="address-display"></p>
+            <div id="weather-table"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+        <script src="scripts/main.js" defer></script>
 	</main>
 	<footer>
-		<p>Stopka strony &copy; 2025</p>
 	</footer>
 </body>
 </html>
